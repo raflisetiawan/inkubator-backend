@@ -2,35 +2,30 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { IncubatorService } from './incubator.service';
 import { Incubator as IncubatorModel } from '@prisma/client';
 import { Body, Delete, Post, Put } from '@nestjs/common/decorators';
-import { UpdateIncubatorDto } from './update-incubator.dto';
+import {IncubatorDto} from './dto/incubator.dto';
 
 @Controller('incubator')
 export class IncubatorController {
     constructor(private readonly incubatorService: IncubatorService,) {}
     @Get()
-    findAll(): string {
-      return 'This action returns all cats';
+    async getAllIncubator(){
+      return this.incubatorService.incubators({})
     }
 
     @Get(':id')
-    async getPostById(@Param('id') id: string): Promise<IncubatorModel> {
+    async getIncubatorById(@Param('id') id: string): Promise<IncubatorModel> {
       return this.incubatorService.incubator({ id: Number(id) });
     }
 
     @Post('create')
   async createIncubator(
-    @Body() postData: { temperature: number; humidity: number; isFan: boolean,  ipAddress: string, },
+    @Body() createIncubatorDto: IncubatorDto,
   ): Promise<IncubatorModel> {
-    const { temperature, humidity, isFan, ipAddress } = postData;
-    return this.incubatorService.createIncubator({
-      temperature,
-      humidity,
-      isFan,
-      ipAddress
-    });
+    return this.incubatorService.createIncubator(createIncubatorDto);
   }
+
   @Put('update/:id')
-  async updateIncubator(@Param('id') id: string, @Body() updateIncubatorDto: UpdateIncubatorDto): Promise<IncubatorModel> {
+  async updateIncubator(@Param('id') id: string, @Body() updateIncubatorDto: IncubatorDto): Promise<IncubatorModel> {
     return this.incubatorService.updateIncubator({
       where: { id: Number(id) },
       data: updateIncubatorDto,
@@ -38,7 +33,7 @@ export class IncubatorController {
   }
 
   @Delete('remove/:id')
-  async deletePost(@Param('id') id: string): Promise<IncubatorModel> {
+  async removeIncubator(@Param('id') id: string): Promise<IncubatorModel> {
     return this.incubatorService.deleteIncbator({ id: Number(id) });
   }
 }
